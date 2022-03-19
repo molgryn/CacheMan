@@ -5,6 +5,7 @@ Utility library to ease managing picke-cache files
 import pickle
 import sys
 import os
+from . import sqlitedict
 
 CACHEMAN_NAME = ".cacheman"
 
@@ -56,6 +57,16 @@ class CacheMan(object):
         except:
             return default_value
         return cache_data
+    
+    def OpenSqliteDict(self, db_name, flag='c'):
+        """
+        Open sqlite dict from the file with the given name
+
+        Arguments:
+            @db_name [string]: the name of the db file
+        """
+        sd_db_path = os.path.join(self.folder_path, db_name)
+        return sqlitedict.SqliteDict(sd_db_path, flag)
 
 
 if __name__ == "__main__":
@@ -69,3 +80,13 @@ if __name__ == "__main__":
     cacheman.Save("testcache", a)
     b = cacheman.Load("testcache")
     print(b)
+
+    sd_db = cacheman.OpenSqliteDict("testdb")
+    sd_db["test"] = "test_value"
+    sd_db.commit()
+    sd_db.close()
+
+    sd_db = cacheman.OpenSqliteDict("testdb")
+    print(sd_db["test"])
+    sd_db.close()
+    
